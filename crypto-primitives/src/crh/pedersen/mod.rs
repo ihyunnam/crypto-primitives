@@ -1,4 +1,4 @@
-use ark_crypto_primitives::Error;
+use crate::Error;
 use ark_std::rand::Rng;
 use ark_std::{
     fmt::{Debug, Formatter, Result as FmtResult},

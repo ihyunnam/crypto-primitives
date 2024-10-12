@@ -1,4 +1,4 @@
-use ark_crypto_primitives::Error;
+use crate::Error;
 use ark_std::marker::PhantomData;
 
 use super::{pedersen, CommitmentScheme};

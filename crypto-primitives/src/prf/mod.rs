@@ -2,7 +2,7 @@
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use core::{fmt::Debug, hash::Hash};
 
-use ark_crypto_primitives::Error;
+use crate::Error;
 
 #[cfg(feature = "r1cs")]
 pub mod constraints;

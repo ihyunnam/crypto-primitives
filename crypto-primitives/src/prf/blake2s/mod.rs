@@ -4,7 +4,7 @@ use blake2::{Blake2s256 as B2s, Blake2sMac};
 use digest::Digest;
 
 use super::PRF;
-use ark_crypto_primitives::Error;
+use crate::Error;
 
 #[cfg(feature = "r1cs")]
 pub mod constraints;

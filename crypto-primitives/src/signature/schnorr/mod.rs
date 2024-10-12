@@ -3,7 +3,7 @@ use crate::{crh::{poseidon::CRH, CRHScheme}, sponge::{poseidon::PoseidonConfig, 
 use derivative::Derivative;
 use crate::{signature::SignatureScheme};
 use ark_std::{end_timer, start_timer};
-use ark_crypto_primitives::Error;
+use crate::Error;
 use ark_ec::{AffineRepr, CurveGroup};
 use ark_ff::{
     fields::{Field, PrimeField}, AdditiveGroup, BigInt, BigInteger, One, ToConstraintField, UniformRand, Zero

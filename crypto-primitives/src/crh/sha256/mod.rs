@@ -1,5 +1,5 @@
 use crate::crh::{CRHScheme, TwoToOneCRHScheme};
-use ark_crypto_primitives::Error;
+use crate::Error;
 use ark_std::rand::Rng;
 #[cfg(not(feature = "std"))]
 use ark_std::vec::Vec;

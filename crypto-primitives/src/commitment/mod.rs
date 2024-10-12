@@ -12,7 +12,7 @@ pub mod constraints;
 #[cfg(feature = "r1cs")]
 pub use constraints::*;
 
-use ark_crypto_primitives::Error;
+use crate::Error;
 
 pub trait CommitmentScheme {
     type Output: CanonicalSerialize + Clone + Default + Eq + Hash + Debug;

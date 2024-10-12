@@ -5,7 +5,7 @@ pub use constraints::*;
 
 pub mod elgamal;
 
-use ark_crypto_primitives::Error;
+use crate::Error;
 use ark_std::rand::Rng;
 
 pub trait AsymmetricEncryptionScheme {

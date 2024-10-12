@@ -1,4 +1,4 @@
-use ark_crypto_primitives::Error;
+use crate::Error;
 use ark_std::{end_timer, rand::Rng, start_timer};
 #[cfg(not(feature = "std"))]
 use ark_std::vec::Vec;

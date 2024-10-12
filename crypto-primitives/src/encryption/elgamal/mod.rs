@@ -2,7 +2,7 @@
 pub mod constraints;
 
 use crate::encryption::AsymmetricEncryptionScheme;
-use ark_crypto_primitives::Error;
+use crate::Error;
 use ark_ec::{AdditiveGroup, CurveGroup};
 use ark_ff::{fields::PrimeField, UniformRand};
 use ark_std::marker::PhantomData;

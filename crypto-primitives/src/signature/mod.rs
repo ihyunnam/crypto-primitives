@@ -1,5 +1,5 @@
 use ark_ed_on_bls12_381::Fr;
-use ark_crypto_primitives::Error;
+use crate::Error;
 use ark_ff::PrimeField;
 use ark_serialize::CanonicalSerialize;
 use crate::sponge::poseidon::PoseidonConfig;
