@@ -4,8 +4,8 @@ use derivative::Derivative;
 use crate::{signature::SignatureScheme};
 use ark_std::{end_timer, start_timer};
 use crate::Error;
-use ark_ec::{AffineRepr, CurveGroup, AdditiveGroup};
-use ark_ff::{
+use ark_ec::{AffineRepr, CurveGroup};
+use ark_ff::{AdditiveGroup,
     fields::{Field, PrimeField}, BigInt, BigInteger, One, ToConstraintField, UniformRand, Zero
 };
 use ark_serialize::CanonicalSerialize;

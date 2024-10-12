@@ -3,8 +3,8 @@ pub mod constraints;
 
 use crate::encryption::AsymmetricEncryptionScheme;
 use crate::Error;
-use ark_ec::{AdditiveGroup, CurveGroup};
-use ark_ff::{fields::PrimeField, UniformRand};
+use ark_ec::{CurveGroup};
+use ark_ff::{AdditiveGroup, fields::PrimeField, UniformRand};
 use ark_std::marker::PhantomData;
 use ark_std::ops::Mul;
 use ark_std::rand::Rng;

@@ -4,8 +4,8 @@ use ark_ec::{
 };
 use ark_ff::{Field, PrimeField};
 use ark_r1cs_std::boolean::Boolean;
-use ark_r1cs_std::convert::{ToBytesGadget, ToConstraintFieldGadget};
-use ark_r1cs_std::fields::fp::FpVar;
+use ark_r1cs_std::convert::{ToConstraintFieldGadget};
+use ark_r1cs_std::fields::{ToBytesGadget, fp::FpVar};
 use ark_r1cs_std::fields::{FieldOpsBounds, FieldVar};
 use ark_r1cs_std::groups::curves::short_weierstrass::{
     AffineVar as SWAffineVar, ProjectiveVar as SWProjectiveVar,
