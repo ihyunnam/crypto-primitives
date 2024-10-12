@@ -102,8 +102,8 @@ impl<C: CurveGroup, I: InjectiveMap<C>, W: pedersen::Window> TwoToOneCRHScheme
         // convert output to input
         Self::evaluate(
             parameters,
-            ark_crypto_primitives::to_uncompressed_bytes!(left_input)?,
-            ark_crypto_primitives::to_uncompressed_bytes!(right_input)?,
+            crate::to_uncompressed_bytes!(left_input)?,
+            crate::to_uncompressed_bytes!(right_input)?,
         )
     }
 }

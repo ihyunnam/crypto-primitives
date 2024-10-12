@@ -190,8 +190,8 @@ impl<C: CurveGroup, W: Window> TwoToOneCRHScheme for TwoToOneCRH<C, W> {
     ) -> Result<Self::Output, Error> {
         Self::evaluate(
             parameters,
-            ark_crypto_primitives::to_uncompressed_bytes!(left_input)?,
-            ark_crypto_primitives::to_uncompressed_bytes!(right_input)?,
+            crate::to_uncompressed_bytes!(left_input)?,
+            crate::to_uncompressed_bytes!(right_input)?,
         )
     }
 }

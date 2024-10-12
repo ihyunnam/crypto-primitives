@@ -8,7 +8,7 @@
 
 ### Features
 
-- [\#107](https://github.com/arkworks-rs/crypto-primitives/pull/107) Impl `CanonicalSerialize` and `CanonicalDeserialize` for `ark_crypto_primitives::crh::pedersen::Parameters`
+- [\#107](https://github.com/arkworks-rs/crypto-primitives/pull/107) Impl `CanonicalSerialize` and `CanonicalDeserialize` for `crate::crh::pedersen::Parameters`
 
 ### Improvements
 

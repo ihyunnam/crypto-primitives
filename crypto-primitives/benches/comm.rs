@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate criterion;
 
-use ark_crypto_primitives::commitment::{pedersen::*, CommitmentScheme};
+use crate::commitment::{pedersen::*, CommitmentScheme};
 use ark_ed_on_bls12_377::EdwardsProjective as Edwards;
 use ark_std::UniformRand;
 use criterion::Criterion;

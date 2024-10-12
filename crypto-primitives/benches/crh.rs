@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate criterion;
 
-use ark_crypto_primitives::crh::{
+use crate::crh::{
     pedersen::{Window, CRH as PedersenCRH},
     CRHScheme,
 };

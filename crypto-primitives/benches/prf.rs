@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate criterion;
 
-use ark_crypto_primitives::prf::*;
+use crate::prf::*;
 use ark_std::rand::Rng;
 use criterion::Criterion;
 

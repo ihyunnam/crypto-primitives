@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate criterion;
 
-use ark_crypto_primitives::signature::{schnorr::*, SignatureScheme};
+use crate::signature::{schnorr::*, SignatureScheme};
 use ark_ed_on_bls12_377::EdwardsProjective as Edwards;
 use ark_std::rand::Rng;
 use blake2::Blake2s256 as Blake2s;
