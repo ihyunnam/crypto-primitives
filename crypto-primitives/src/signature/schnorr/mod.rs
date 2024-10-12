@@ -123,7 +123,7 @@ where
         signature: &Self::Signature,
     ) -> Result<bool, Error> {
         let verify_time = start_timer!(|| "SchnorrSig::Verify");
-
+hi
         let Signature {
             prover_response,
             verifier_challenge,
