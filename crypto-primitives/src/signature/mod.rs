@@ -11,7 +11,6 @@ pub mod constraints;
 #[cfg(feature = "r1cs")]
 pub use constraints::*;
 
-pub mod constraints;
 pub use constraints::*;
 pub mod schnorr;
 
