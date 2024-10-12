@@ -21,6 +21,7 @@ ark-bls12-377 = { version = "^0.4.0", default-features = false, features = [ "cu
 ark-mnt4-298 = { version = "^0.4.0", default-features = false, features = [ "curve", "r1cs" ] }
 ark-mnt6-298 = { version = "^0.4.0", default-features = false, features = [ "r1cs" ] }
 num-bigint = { version = "0.4", default-features = false }
+ark-bn254 = { version = "^0.4.0", default-features = true }
 
 ark-crypto-primitives-macros = { version = "^0.4.0", path = "../macros" }
 

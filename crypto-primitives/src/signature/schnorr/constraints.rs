@@ -1,16 +1,19 @@
+use ark_bn254::Fr as F;
 use ark_ec::CurveGroup;
 use ark_ff::Field;
 use ark_r1cs_std::prelude::*;
 use ark_relations::r1cs::{Namespace, SynthesisError};
 
-use crate::signature::{SigRandomizePkGadget, SigVerifyGadget};
+use crate::{signature::{SigRandomizePkGadget, SigVerifyGadget}, sponge::poseidon::PoseidonConfig};
 
 #[cfg(not(feature = "std"))]
 use ark_std::vec::Vec;
 use ark_std::{borrow::Borrow, marker::PhantomData};
 
 use crate::signature::schnorr::{Parameters, PublicKey, Schnorr};
-use digest::Digest;
+// use digest::Digest;
+
+use super::Signature;
 
 type ConstraintF<C> = <<C as CurveGroup>::BaseField as Field>::BasePrimeField;
 
@@ -47,12 +50,11 @@ where
     _group_gadget: PhantomData<*const GC>,
 }
 
-impl<C, GC, D> SigRandomizePkGadget<Schnorr<C, D>, ConstraintF<C>>
+impl<C, GC> SigRandomizePkGadget<Schnorr<C>, ConstraintF<C>>
     for SchnorrRandomizePkGadget<C, GC>
 where
     C: CurveGroup,
     GC: CurveVar<C, ConstraintF<C>>,
-    D: Digest + Send + Sync,
     for<'a> &'a GC: GroupOpsBounds<'a, C, GC>,
 {
     type ParametersVar = ParametersVar<C, GC>;
@@ -77,14 +79,13 @@ where
     }
 }
 
-impl<C, GC, D> AllocVar<Parameters<C, D>, ConstraintF<C>> for ParametersVar<C, GC>
+impl<C, GC> AllocVar<Parameters<C>, ConstraintF<C>> for ParametersVar<C, GC>
 where
     C: CurveGroup,
     GC: CurveVar<C, ConstraintF<C>>,
-    D: Digest,
     for<'a> &'a GC: GroupOpsBounds<'a, C, GC>,
 {
-    fn new_variable<T: Borrow<Parameters<C, D>>>(
+    fn new_variable<T: Borrow<Parameters<C>>>(
         cs: impl Into<Namespace<ConstraintF<C>>>,
         f: impl FnOnce() -> Result<T, SynthesisError>,
         mode: AllocationMode,
@@ -154,7 +155,7 @@ where
     GC: CurveVar<C, ConstraintF<C>>,
     for<'a> &'a GC: GroupOpsBounds<'a, C, GC>,
 {
-    fn to_bytes_le(&self) -> Result<Vec<UInt8<ConstraintF<C>>>, SynthesisError> {
+    fn to_bytes(&self) -> Result<Vec<UInt8<ConstraintF<C>>>, SynthesisError> {
         self.pub_key.to_bytes_le()
     }
 }
@@ -241,12 +242,13 @@ where
     _group_gadget: PhantomData<*const GC>,
 }
 
-impl<C, GC, D> SigVerifyGadget<Schnorr<C, D>, ConstraintF<C>> for SchnorrSignatureVerifyGadget<C, GC>
+impl<C, GC> SigVerifyGadget<Schnorr<C>, ConstraintF<C>> for SchnorrSignatureVerifyGadget<C, GC>
 where
     C: CurveGroup,
     GC: CurveVar<C, ConstraintF<C>>,
     for<'group_ops_bounds> &'group_ops_bounds GC: GroupOpsBounds<'group_ops_bounds, C, GC>,
 {
+    type CRHParameterVar = CRHParameterVar<F>;
     type ParametersVar = ParametersVar<C, GC>;
     type PublicKeyVar = PublicKeyVar<C, GC>;
     type SignatureVar = SignatureVar<C, GC>;
