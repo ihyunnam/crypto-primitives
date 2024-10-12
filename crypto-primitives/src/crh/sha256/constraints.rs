@@ -11,7 +11,7 @@ use ark_ff::PrimeField;
 use ark_r1cs_std::{
     alloc::{AllocVar, AllocationMode},
     boolean::Boolean,
-    convert::ToBytesGadget,
+    fields::fp::ToBytesGadget,
     eq::EqGadget,
     select::CondSelectGadget,
     uint32::UInt32,
