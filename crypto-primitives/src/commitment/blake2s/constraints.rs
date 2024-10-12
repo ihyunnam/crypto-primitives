@@ -34,7 +34,7 @@ impl<F: PrimeField> CommitmentGadget<blake2s::Commitment, F> for CommGadget {
         }
         let mut result = Vec::new();
         for int in evaluate_blake2s(&input_bits)?.into_iter() {
-            let chunk = int.to_bytes_le()?;
+            let chunk = int.to_bytes()?;
             result.extend_from_slice(&chunk);
         }
         Ok(OutputVar(result))

@@ -329,7 +329,7 @@ impl<ConstraintF: PrimeField> EqGadget<ConstraintF> for OutputVar<ConstraintF> {
 
 impl<ConstraintF: PrimeField> ToBytesGadget<ConstraintF> for OutputVar<ConstraintF> {
     #[inline]
-    fn to_bytes_le(&self) -> Result<Vec<UInt8<ConstraintF>>, SynthesisError> {
+    fn to_bytes(&self) -> Result<Vec<UInt8<ConstraintF>>, SynthesisError> {
         Ok(self.0.clone())
     }
 }
@@ -386,7 +386,7 @@ impl<F: PrimeField> PRFGadget<Blake2s, F> for Blake2sGadget {
             .collect();
         let result: Vec<_> = evaluate_blake2s(&input)?
             .into_iter()
-            .flat_map(|int| int.to_bytes_le().unwrap())
+            .flat_map(|int| int.to_bytes().unwrap())
             .collect();
         Ok(OutputVar(result))
     }

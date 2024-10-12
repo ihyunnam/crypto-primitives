@@ -231,7 +231,7 @@ where
 }
 
 impl<ConstraintF: PrimeField> ToBytesGadget<ConstraintF> for DigestVar<ConstraintF> {
-    fn to_bytes_le(&self) -> Result<Vec<UInt8<ConstraintF>>, SynthesisError> {
+    fn to_bytes(&self) -> Result<Vec<UInt8<ConstraintF>>, SynthesisError> {
         Ok(self.0.clone())
     }
 }
@@ -370,8 +370,8 @@ where
         right_input: &Self::OutputVar,
     ) -> Result<Self::OutputVar, SynthesisError> {
         // Convert output to bytes
-        let left_input = left_input.to_bytes_le()?;
-        let right_input = right_input.to_bytes_le()?;
+        let left_input = left_input.to_bytes()?;
+        let right_input = right_input.to_bytes()?;
         <Self as TwoToOneCRHSchemeGadget<Sha256, ConstraintF>>::evaluate(
             parameters,
             &left_input,
