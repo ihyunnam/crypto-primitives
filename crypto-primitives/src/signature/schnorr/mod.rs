@@ -1,3 +1,5 @@
+use crate::crh::poseidon::CRH;
+use ark_bn254::Fr;
 use crate::{signature::SignatureScheme, Error};
 use ark_ec::{AffineRepr, CurveGroup};
 use ark_ff::{
@@ -77,6 +79,7 @@ where
     }
 
     fn sign<R: Rng>(
+        poseidon_params: PoseidonConfig<Fr>,
         parameters: &Self::Parameters,
         sk: &Self::SecretKey,
         message: &[u8],
@@ -97,9 +100,13 @@ where
             prover_commitment.serialize_compressed(&mut hash_input)?;
             message.serialize_compressed(&mut hash_input)?;
 
+            // EDITED
+            let hash_input_fe = Fr::from_le_bytes_mod_order(&hash_input);      // Poseidon takes F as input. Check if hash_input already LE?
             // Compute the supposed verifier response: e := H(salt || r || msg);
             if let Some(verifier_challenge) =
-                C::ScalarField::from_random_bytes(&D::digest(&hash_input))
+                // C::ScalarField::from_random_bytes(&D::digest(&hash_input))
+                // EDITED
+                C::ScalarField::from_random_bytes(&CRH::<Fr>::evaluate(&poseidon_params, [hash_input_fe]).unwrap().into().to_bytes_le())     // Poseidon returns F
             {
                 break (random_scalar, verifier_challenge);
             };
@@ -117,13 +124,14 @@ where
     }
 
     fn verify(
+        poseidon_params: PoseidonConfig<Fr>,
         parameters: &Self::Parameters,
         pk: &Self::PublicKey,
         message: &[u8],
         signature: &Self::Signature,
     ) -> Result<bool, Error> {
         let verify_time = start_timer!(|| "SchnorrSig::Verify");
-hi
+
         let Signature {
             prover_response,
             verifier_challenge,
@@ -138,8 +146,13 @@ hi
         claimed_prover_commitment.serialize_compressed(&mut hash_input)?;
         message.serialize_compressed(&mut hash_input)?;
 
+        // EDITED
+        let hash_input_fe = Fr::from_le_bytes_mod_order(&hash_input);      // Poseidon takes F as input. Check if hash_input already LE?
+
         let obtained_verifier_challenge = if let Some(obtained_verifier_challenge) =
-            C::ScalarField::from_random_bytes(&D::digest(&hash_input))
+            // C::ScalarField::from_random_bytes(&D::digest(&hash_input))
+            // EDITED
+            C::ScalarField::from_random_bytes(&CRH::<Fr>::evaluate(&poseidon_params, [hash_input_fe]).unwrap().into().to_bytes_le())     // Poseidon returns F
         {
             obtained_verifier_challenge
         } else {
