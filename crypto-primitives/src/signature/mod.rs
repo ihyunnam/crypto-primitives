@@ -1,5 +1,7 @@
-use crate::Error;
+use ark_crypto_primitives::Error;
+use ark_ff::PrimeField;
 use ark_serialize::CanonicalSerialize;
+use crate::sponge::poseidon::PoseidonConfig;
 use ark_std::hash::Hash;
 use ark_std::rand::Rng;
 
@@ -10,7 +12,7 @@ pub use constraints::*;
 
 pub mod schnorr;
 
-pub trait SignatureScheme {
+pub trait SignatureScheme<F: PrimeField> {
     type Parameters: Clone + Send + Sync;
     type PublicKey: CanonicalSerialize + Hash + Eq + Clone + Default + Send + Sync;
     type SecretKey: CanonicalSerialize + Clone + Default;
@@ -24,6 +26,7 @@ pub trait SignatureScheme {
     ) -> Result<(Self::PublicKey, Self::SecretKey), Error>;
 
     fn sign<R: Rng>(
+        poseidon_params: &PoseidonConfig<F>,
         pp: &Self::Parameters,
         sk: &Self::SecretKey,
         message: &[u8],
@@ -31,6 +34,7 @@ pub trait SignatureScheme {
     ) -> Result<Self::Signature, Error>;
 
     fn verify(
+        poseidon_params: &PoseidonConfig<F>,
         pp: &Self::Parameters,
         pk: &Self::PublicKey,
         message: &[u8],
@@ -52,39 +56,45 @@ pub trait SignatureScheme {
 
 #[cfg(test)]
 mod test {
-    use crate::signature::*;
+    use crate::{signature::*, sponge::poseidon::find_poseidon_ark_and_mds};
     use ark_ec::AdditiveGroup;
-    use ark_ed_on_bls12_381::EdwardsProjective as JubJub;
+    use ark_ed_on_bls12_381::{EdwardsProjective as JubJub, Fr};
     use ark_std::{test_rng, UniformRand};
     use blake2::Blake2s256 as Blake2s;
 
-    fn sign_and_verify<S: SignatureScheme>(message: &[u8]) {
+    fn sign_and_verify<S: SignatureScheme<Fr>>(message: &[u8]) {
+        let (ark, mds) = find_poseidon_ark_and_mds::<Fr> (252, 2, 8, 24, 0);        // ark_bn254::FrParameters::MODULUS_BITS = 255
+        let poseidon_params = PoseidonConfig::<Fr>::new(8, 24, 31, mds, ark, 2, 1);
         let rng = &mut test_rng();
         let parameters = S::setup::<_>(rng).unwrap();
         let (pk, sk) = S::keygen(&parameters, rng).unwrap();
-        let sig = S::sign(&parameters, &sk, &message, rng).unwrap();
-        assert!(S::verify(&parameters, &pk, &message, &sig).unwrap());
+        let sig = S::sign(&poseidon_params, &parameters, &sk, &message, rng).unwrap();
+        assert!(S::verify(&poseidon_params, &parameters, &pk, &message, &sig).unwrap());
     }
-
-    fn failed_verification<S: SignatureScheme>(message: &[u8], bad_message: &[u8]) {
+    
+    fn failed_verification<S: SignatureScheme<Fr>>(message: &[u8], bad_message: &[u8]) {
+        let (ark, mds) = find_poseidon_ark_and_mds::<Fr> (252, 2, 8, 24, 0);        // ark_bn254::FrParameters::MODULUS_BITS = 255
+        let poseidon_params = PoseidonConfig::<Fr>::new(8, 24, 31, mds, ark, 2, 1);
         let rng = &mut test_rng();
         let parameters = S::setup::<_>(rng).unwrap();
         let (pk, sk) = S::keygen(&parameters, rng).unwrap();
-        let sig = S::sign(&parameters, &sk, message, rng).unwrap();
-        assert!(!S::verify(&parameters, &pk, bad_message, &sig).unwrap());
+        let sig = S::sign(&poseidon_params, &parameters, &sk, message, rng).unwrap();
+        assert!(!S::verify(&poseidon_params, &parameters, &pk, bad_message, &sig).unwrap());
     }
-
-    fn randomize_and_verify<S: SignatureScheme>(message: &[u8], randomness: &[u8]) {
+    
+    fn randomize_and_verify<S: SignatureScheme<Fr>>(message: &[u8], randomness: &[u8]) {
+        let (ark, mds) = find_poseidon_ark_and_mds::<Fr> (252, 2, 8, 24, 0);        // ark_bn254::FrParameters::MODULUS_BITS = 255
+        let poseidon_params = PoseidonConfig::<Fr>::new(8, 24, 31, mds, ark, 2, 1);
         let rng = &mut test_rng();
         let parameters = S::setup::<_>(rng).unwrap();
         let (pk, sk) = S::keygen(&parameters, rng).unwrap();
-        let sig = S::sign(&parameters, &sk, message, rng).unwrap();
-        assert!(S::verify(&parameters, &pk, message, &sig).unwrap());
+        let sig = S::sign(&poseidon_params, &parameters, &sk, message, rng).unwrap();
+        assert!(S::verify(&poseidon_params, &parameters, &pk, message, &sig).unwrap());
         let randomized_pk = S::randomize_public_key(&parameters, &pk, randomness).unwrap();
         let randomized_sig = S::randomize_signature(&parameters, &sig, randomness).unwrap();
-        assert!(S::verify(&parameters, &randomized_pk, &message, &randomized_sig).unwrap());
+        assert!(S::verify(&poseidon_params, &parameters, &randomized_pk, &message, &randomized_sig).unwrap());
     }
-
+    
     #[test]
     fn schnorr_signature_test() {
         let message = "Hi, I am a Schnorr signature!";

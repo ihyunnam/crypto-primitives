@@ -1,4 +1,4 @@
-use crate::Error;
+use ark_crypto_primitives::Error;
 use ark_std::rand::Rng;
 use ark_std::{
     fmt::{Debug, Formatter, Result as FmtResult},
@@ -12,7 +12,7 @@ use ark_ec::CurveGroup;
 use ark_ff::{Field, ToConstraintField};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::borrow::Borrow;
-use ark_std::cfg_chunks;
+use ark_std::{cfg_chunks, end_timer, start_timer};
 #[cfg(not(feature = "std"))]
 use ark_std::vec::Vec;
 
@@ -190,8 +190,8 @@ impl<C: CurveGroup, W: Window> TwoToOneCRHScheme for TwoToOneCRH<C, W> {
     ) -> Result<Self::Output, Error> {
         Self::evaluate(
             parameters,
-            crate::to_uncompressed_bytes!(left_input)?,
-            crate::to_uncompressed_bytes!(right_input)?,
+            ark_crypto_primitives::to_uncompressed_bytes!(left_input)?,
+            ark_crypto_primitives::to_uncompressed_bytes!(right_input)?,
         )
     }
 }

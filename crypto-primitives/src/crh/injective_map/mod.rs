@@ -1,5 +1,5 @@
-use crate::Error;
-use ark_std::rand::Rng;
+use ark_crypto_primitives::Error;
+use ark_std::{end_timer, rand::Rng, start_timer};
 #[cfg(not(feature = "std"))]
 use ark_std::vec::Vec;
 use ark_std::{fmt::Debug, hash::Hash, marker::PhantomData};
@@ -102,8 +102,8 @@ impl<C: CurveGroup, I: InjectiveMap<C>, W: pedersen::Window> TwoToOneCRHScheme
         // convert output to input
         Self::evaluate(
             parameters,
-            crate::to_uncompressed_bytes!(left_input)?,
-            crate::to_uncompressed_bytes!(right_input)?,
+            ark_crypto_primitives::to_uncompressed_bytes!(left_input)?,
+            ark_crypto_primitives::to_uncompressed_bytes!(right_input)?,
         )
     }
 }

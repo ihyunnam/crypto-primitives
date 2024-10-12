@@ -8,7 +8,7 @@ pub mod pedersen;
 pub mod poseidon;
 pub mod sha256;
 
-use crate::Error;
+use ark_crypto_primitives::Error;
 
 #[cfg(feature = "r1cs")]
 pub mod constraints;

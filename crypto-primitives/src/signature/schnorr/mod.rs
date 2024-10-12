@@ -1,10 +1,12 @@
-use crate::crh::poseidon::CRH;
-use ark_bn254::Fr;
-use crate::{signature::SignatureScheme, Error};
+use crate::{crh::{poseidon::CRH, CRHScheme}, sponge::{poseidon::PoseidonConfig, Absorb}};
+// use ark_bn254::Fr;
+use derivative::Derivative;
+use crate::{signature::SignatureScheme};
+use ark_std::{end_timer, start_timer};
+use ark_crypto_primitives::Error;
 use ark_ec::{AffineRepr, CurveGroup};
 use ark_ff::{
-    fields::{Field, PrimeField},
-    AdditiveGroup, One, ToConstraintField, UniformRand, Zero,
+    fields::{Field, PrimeField}, AdditiveGroup, BigInt, BigInteger, One, ToConstraintField, UniformRand, Zero
 };
 use ark_serialize::CanonicalSerialize;
 use ark_std::ops::Mul;
@@ -41,7 +43,7 @@ pub struct Signature<C: CurveGroup> {
     pub verifier_challenge: C::ScalarField,
 }
 
-impl<C: CurveGroup + Hash, D: Digest + Send + Sync> SignatureScheme for Schnorr<C, D>
+impl<F: PrimeField + Absorb, C: CurveGroup + Hash, D: Digest + Send + Sync> SignatureScheme<F> for Schnorr<C, D>
 where
     C::ScalarField: PrimeField,
 {
@@ -79,12 +81,13 @@ where
     }
 
     fn sign<R: Rng>(
-        poseidon_params: PoseidonConfig<Fr>,
+        poseidon_params: &PoseidonConfig<F>,
         parameters: &Self::Parameters,
         sk: &Self::SecretKey,
         message: &[u8],
         rng: &mut R,
-    ) -> Result<Self::Signature, Error> {
+    ) -> Result<Self::Signature, Error>
+     {
         let sign_time = start_timer!(|| "SchnorrSig::Sign");
         // (k, e);
         let (random_scalar, verifier_challenge) = loop {
@@ -101,12 +104,13 @@ where
             message.serialize_compressed(&mut hash_input)?;
 
             // EDITED
-            let hash_input_fe = Fr::from_le_bytes_mod_order(&hash_input);      // Poseidon takes F as input. Check if hash_input already LE?
+            let hash_input_fe = F::from_le_bytes_mod_order(&hash_input);      // Poseidon takes F as input. Check if hash_input already LE?
             // Compute the supposed verifier response: e := H(salt || r || msg);
+            let hash_input_bigint: num_bigint::BigUint = CRH::<F>::evaluate(&poseidon_params, [hash_input_fe]).unwrap().into();
             if let Some(verifier_challenge) =
                 // C::ScalarField::from_random_bytes(&D::digest(&hash_input))
                 // EDITED
-                C::ScalarField::from_random_bytes(&CRH::<Fr>::evaluate(&poseidon_params, [hash_input_fe]).unwrap().into().to_bytes_le())     // Poseidon returns F
+                C::ScalarField::from_random_bytes(&hash_input_bigint.to_bytes_le())     // Poseidon returns F
             {
                 break (random_scalar, verifier_challenge);
             };
@@ -124,7 +128,7 @@ where
     }
 
     fn verify(
-        poseidon_params: PoseidonConfig<Fr>,
+        poseidon_params: &PoseidonConfig<F>,
         parameters: &Self::Parameters,
         pk: &Self::PublicKey,
         message: &[u8],
@@ -147,18 +151,21 @@ where
         message.serialize_compressed(&mut hash_input)?;
 
         // EDITED
-        let hash_input_fe = Fr::from_le_bytes_mod_order(&hash_input);      // Poseidon takes F as input. Check if hash_input already LE?
+        let hash_input_fe = F::from_le_bytes_mod_order(&hash_input);      // Poseidon takes F as input. Check if hash_input already LE?
 
+        let hash_input_int: num_bigint::BigUint =CRH::<F>::evaluate(&poseidon_params, [hash_input_fe]).unwrap().into();
         let obtained_verifier_challenge = if let Some(obtained_verifier_challenge) =
             // C::ScalarField::from_random_bytes(&D::digest(&hash_input))
             // EDITED
-            C::ScalarField::from_random_bytes(&CRH::<Fr>::evaluate(&poseidon_params, [hash_input_fe]).unwrap().into().to_bytes_le())     // Poseidon returns F
+            C::ScalarField::from_random_bytes(&hash_input_int.to_bytes_le())     // Poseidon returns F
         {
             obtained_verifier_challenge
         } else {
             return Ok(false);
         };
         end_timer!(verify_time);
+        println!("verifier challenge {:?}", verifier_challenge);
+        println!("obtained verifier challenge {:?}", obtained_verifier_challenge);
         Ok(verifier_challenge == &obtained_verifier_challenge)
     }
 

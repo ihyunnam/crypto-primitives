@@ -1,7 +1,8 @@
 use crate::crh::TwoToOneCRHScheme;
 use crate::sponge::poseidon::{PoseidonConfig, PoseidonSponge};
 use crate::sponge::{Absorb, CryptographicSponge};
-use crate::{crh::CRHScheme, Error};
+use crate::{crh::CRHScheme};
+use ark_crypto_primitives::Error;
 use ark_ff::PrimeField;
 use ark_std::borrow::Borrow;
 use ark_std::marker::PhantomData;

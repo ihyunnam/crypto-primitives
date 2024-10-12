@@ -1,5 +1,5 @@
 use super::CommitmentScheme;
-use crate::Error;
+use ark_crypto_primitives::Error;
 use ark_std::rand::Rng;
 use blake2::Blake2s256 as b2s;
 use digest::Digest;

@@ -2,12 +2,13 @@
 //! specific Twisted Edwards (TE) curves. See [Section 5.4.17 of the Zcash protocol specification](https://raw.githubusercontent.com/zcash/zips/master/protocol/protocol.pdf#concretepedersenhash) for a formal description of this hash function, specialized for the Jubjub curve.
 //! The implementation in this repository is generic across choice of TE curves.
 
-use crate::Error;
+use ark_crypto_primitives::Error;
 use ark_std::rand::Rng;
 use ark_std::{
     fmt::{Debug, Formatter, Result as FmtResult},
     marker::PhantomData,
 };
+use derivative::Derivative;
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
 
@@ -20,7 +21,7 @@ use ark_ec::{
 use ark_ff::fields::PrimeField;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::borrow::Borrow;
-use ark_std::cfg_chunks;
+use ark_std::{cfg_chunks, end_timer, start_timer};
 #[cfg(not(feature = "std"))]
 use ark_std::vec::Vec;
 use ark_std::UniformRand;
@@ -233,8 +234,8 @@ impl<P: TECurveConfig, W: pedersen::Window> TwoToOneCRHScheme for TwoToOneCRH<P,
     ) -> Result<Self::Output, Error> {
         Self::evaluate(
             parameters,
-            crate::to_uncompressed_bytes!(left_input)?,
-            crate::to_uncompressed_bytes!(right_input)?,
+            ark_crypto_primitives::to_uncompressed_bytes!(left_input)?,
+            ark_crypto_primitives::to_uncompressed_bytes!(right_input)?,
         )
     }
 }

@@ -15,6 +15,13 @@ edition.workspace = true
 ################################# Dependencies ################################
 
 [dependencies]
+ark-ed-on-bls12-377 = { version = "^0.4.0", default-features = false }
+ark-ed-on-bls12-381 = { version = "^0.4.0", default-features = false, features = [ "r1cs" ] }
+ark-bls12-377 = { version = "^0.4.0", default-features = false, features = [ "curve", "r1cs" ] }
+ark-mnt4-298 = { version = "^0.4.0", default-features = false, features = [ "curve", "r1cs" ] }
+ark-mnt6-298 = { version = "^0.4.0", default-features = false, features = [ "r1cs" ] }
+num-bigint = { version = "0.4", default-features = false }
+
 ark-crypto-primitives-macros = { version = "^0.4.0", path = "../macros" }
 
 ark-ff = { version = "^0.4.0", default-features = false }
@@ -62,6 +69,7 @@ ark-ed-on-bls12-381 = { version = "^0.4.0", default-features = false, features =
 ark-bls12-377 = { version = "^0.4.0", default-features = false, features = [ "curve", "r1cs" ] }
 ark-mnt4-298 = { version = "^0.4.0", default-features = false, features = [ "curve", "r1cs" ] }
 ark-mnt6-298 = { version = "^0.4.0", default-features = false, features = [ "r1cs" ] }
+
 criterion = { version = "0.4" }
 
 ################################# Benchmarks ##################################
