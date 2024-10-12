@@ -1,12 +1,12 @@
 use ark_ff::{Field, PrimeField};
 use ark_r1cs_std::prelude::*;
 use ark_relations::r1cs::SynthesisError;
-use ark_ed_on_bls12_381::Fr;
+use ark_bn254::Fr;
 use crate::{signature::SignatureScheme, sponge::{poseidon::PoseidonConfig, Absorb}};
-// use crate::crh::poseidon::constraints::CRHParametersVar;
+use crate::crh::poseidon::constraints::CRHParametersVar;
 
 pub trait SigVerifyGadget<S: SignatureScheme<Fr>, ConstraintF: Field> {
-    type CRHParametersVar<F: PrimeField + Absorb>: AllocVar<PoseidonConfig<Fr>, Fr> + Clone;
+    // type CRHParametersVar<F: PrimeField + Absorb>: AllocVar<PoseidonConfig<Fr>, Fr> + Clone;
     type ParametersVar: AllocVar<S::Parameters, ConstraintF> + Clone;
 
     type PublicKeyVar: ToBytesGadget<ConstraintF> + AllocVar<S::PublicKey, ConstraintF> + Clone;
@@ -14,7 +14,7 @@ pub trait SigVerifyGadget<S: SignatureScheme<Fr>, ConstraintF: Field> {
     type SignatureVar: ToBytesGadget<ConstraintF> + AllocVar<S::Signature, ConstraintF> + Clone;
 
     fn verify(
-        poseidon_params: &Self::CRHParametersVar<Fr>,
+        poseidon_params: &CRHParametersVar<Fr>,
         parameters: &Self::ParametersVar,
         public_key: &Self::PublicKeyVar,
         // TODO: Should we make this take in bytes or something different?

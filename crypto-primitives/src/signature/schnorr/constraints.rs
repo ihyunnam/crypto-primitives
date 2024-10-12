@@ -4,7 +4,7 @@ use ark_ff::Field;
 use ark_r1cs_std::prelude::*;
 use ark_relations::r1cs::{Namespace, SynthesisError};
 
-use crate::{signature::{SigRandomizePkGadget, SigVerifyGadget}, sponge::poseidon::PoseidonConfig};
+use crate::{crh::poseidon::constraints::{CRHGadget, CRHParametersVar}, signature::{SigRandomizePkGadget, SigVerifyGadget}, sponge::poseidon::PoseidonConfig};
 
 #[cfg(not(feature = "std"))]
 use ark_std::vec::Vec;
@@ -189,7 +189,7 @@ where
     ) -> Result<Self, SynthesisError> {
         f().and_then(|val| {
             let cs = cs.into();
-            let response_bytes = to_bytes![val.borrow().prover_response].unwrap();
+            let response_bytes = val.borrow().prover_response.to_bytes().unwrap();
             let challenge_bytes = val.borrow().verifier_challenge;
             let mut prover_response = Vec::<UInt8<ConstraintF<C>>>::new();
             let mut verifier_challenge = Vec::<UInt8<ConstraintF<C>>>::new();
@@ -248,13 +248,13 @@ where
     GC: CurveVar<C, ConstraintF<C>>,
     for<'group_ops_bounds> &'group_ops_bounds GC: GroupOpsBounds<'group_ops_bounds, C, GC>,
 {
-    type CRHParameterVar = CRHParameterVar<F>;
+    // type CRHParameterVar = CRHParameterVar<F>;
     type ParametersVar = ParametersVar<C, GC>;
     type PublicKeyVar = PublicKeyVar<C, GC>;
     type SignatureVar = SignatureVar<C, GC>;
 
     fn verify(
-        poseidon_params: &PoseidonConfig<F>,
+        poseidon_params: &CRHParametersVar<F>,
         parameters: &Self::ParametersVar,
         public_key: &Self::PublicKeyVar,
         message: &[UInt8<ConstraintF<C>>],
