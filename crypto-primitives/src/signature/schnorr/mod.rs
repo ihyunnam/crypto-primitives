@@ -14,20 +14,20 @@ use ark_std::rand::Rng;
 #[cfg(not(feature = "std"))]
 use ark_std::vec::Vec;
 use ark_std::{hash::Hash, marker::PhantomData};
-use digest::Digest;
+// use digest::Digest;
 
 #[cfg(feature = "r1cs")]
 pub mod constraints;
 
-pub struct Schnorr<C: CurveGroup, D: Digest> {
+pub struct Schnorr<C: CurveGroup> {
     _group: PhantomData<C>,
     _hash: PhantomData<D>,
 }
 
 #[derive(Derivative)]
-#[derivative(Clone(bound = "C: CurveGroup, H: Digest"), Debug)]
-pub struct Parameters<C: CurveGroup, H: Digest> {
-    _hash: PhantomData<H>,
+#[derivative(Clone(bound = "C: CurveGroup"), Debug)]
+pub struct Parameters<C: CurveGroup> {
+    // _hash: PhantomData<H>,
     pub generator: C::Affine,
     pub salt: [u8; 32],
 }
@@ -43,11 +43,11 @@ pub struct Signature<C: CurveGroup> {
     pub verifier_challenge: C::ScalarField,
 }
 
-impl<F: PrimeField + Absorb, C: CurveGroup + Hash, D: Digest + Send + Sync> SignatureScheme<F> for Schnorr<C, D>
+impl<F: PrimeField + Absorb, C: CurveGroup + Hash> SignatureScheme<F> for Schnorr<C>
 where
     C::ScalarField: PrimeField,
 {
-    type Parameters = Parameters<C, D>;
+    type Parameters = Parameters<C>;
     type PublicKey = PublicKey<C>;
     type SecretKey = SecretKey<C>;
     type Signature = Signature<C>;
@@ -235,8 +235,8 @@ pub fn bytes_to_bits(bytes: &[u8]) -> Vec<bool> {
     bits
 }
 
-impl<ConstraintF: Field, C: CurveGroup + ToConstraintField<ConstraintF>, D: Digest>
-    ToConstraintField<ConstraintF> for Parameters<C, D>
+impl<ConstraintF: Field, C: CurveGroup + ToConstraintField<ConstraintF>>
+    ToConstraintField<ConstraintF> for Parameters<C>
 {
     #[inline]
     fn to_field_elements(&self) -> Option<Vec<ConstraintF>> {
