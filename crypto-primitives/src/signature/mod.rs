@@ -1,3 +1,4 @@
+use ark_ed_on_bls12_381::Fr;
 use ark_crypto_primitives::Error;
 use ark_ff::PrimeField;
 use ark_serialize::CanonicalSerialize;
@@ -10,6 +11,8 @@ pub mod constraints;
 #[cfg(feature = "r1cs")]
 pub use constraints::*;
 
+pub mod constraints;
+pub use constraints::*;
 pub mod schnorr;
 
 pub trait SignatureScheme<F: PrimeField> {
@@ -54,16 +57,20 @@ pub trait SignatureScheme<F: PrimeField> {
     ) -> Result<Self::Signature, Error>;
 }
 
+
 #[cfg(test)]
 mod test {
     use crate::{signature::*, sponge::poseidon::find_poseidon_ark_and_mds};
-    use ark_ec::AdditiveGroup;
+    use ark_ec::{AdditiveGroup, CurveGroup};
     use ark_ed_on_bls12_381::{EdwardsProjective as JubJub, Fr};
+    use ark_ff::Field;
     use ark_std::{test_rng, UniformRand};
     use blake2::Blake2s256 as Blake2s;
+    use constraints::SigVerifyGadget;
+    use schnorr::Schnorr;
 
     fn sign_and_verify<S: SignatureScheme<Fr>>(message: &[u8]) {
-        let (ark, mds) = find_poseidon_ark_and_mds::<Fr> (252, 2, 8, 24, 0);        // ark_bn254::FrParameters::MODULUS_BITS = 255
+        let (ark, mds) = find_poseidon_ark_and_mds::<Fr> (252, 2, 8, 24, 0);        // ark_bn254::FrParameters::MODULUS_BITS = 255, bls381: 252
         let poseidon_params = PoseidonConfig::<Fr>::new(8, 24, 31, mds, ark, 2, 1);
         let rng = &mut test_rng();
         let parameters = S::setup::<_>(rng).unwrap();
@@ -73,7 +80,7 @@ mod test {
     }
     
     fn failed_verification<S: SignatureScheme<Fr>>(message: &[u8], bad_message: &[u8]) {
-        let (ark, mds) = find_poseidon_ark_and_mds::<Fr> (252, 2, 8, 24, 0);        // ark_bn254::FrParameters::MODULUS_BITS = 255
+        let (ark, mds) = find_poseidon_ark_and_mds::<Fr> (252, 2, 8, 24, 0);        // ark_bn254::FrParameters::MODULUS_BITS = 255, bls381: 252
         let poseidon_params = PoseidonConfig::<Fr>::new(8, 24, 31, mds, ark, 2, 1);
         let rng = &mut test_rng();
         let parameters = S::setup::<_>(rng).unwrap();
@@ -83,7 +90,7 @@ mod test {
     }
     
     fn randomize_and_verify<S: SignatureScheme<Fr>>(message: &[u8], randomness: &[u8]) {
-        let (ark, mds) = find_poseidon_ark_and_mds::<Fr> (252, 2, 8, 24, 0);        // ark_bn254::FrParameters::MODULUS_BITS = 255
+        let (ark, mds) = find_poseidon_ark_and_mds::<Fr> (252, 2, 8, 24, 0);        // ark_bn254::FrParameters::MODULUS_BITS = 255, bls381: 252
         let poseidon_params = PoseidonConfig::<Fr>::new(8, 24, 31, mds, ark, 2, 1);
         let rng = &mut test_rng();
         let parameters = S::setup::<_>(rng).unwrap();
