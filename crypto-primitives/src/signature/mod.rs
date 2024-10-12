@@ -60,9 +60,9 @@ pub trait SignatureScheme<F: PrimeField> {
 #[cfg(test)]
 mod test {
     use crate::{signature::*, sponge::poseidon::find_poseidon_ark_and_mds};
-    use ark_ec::{AdditiveGroup, CurveGroup};
+    use ark_ec::{CurveGroup};
     use ark_ed_on_bls12_381::{EdwardsProjective as JubJub, Fr};
-    use ark_ff::Field;
+    use ark_ff::{Field, fields::AdditiveGroup};
     use ark_std::{test_rng, UniformRand};
     use blake2::Blake2s256 as Blake2s;
     use constraints::SigVerifyGadget;

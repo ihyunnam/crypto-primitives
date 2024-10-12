@@ -15,10 +15,10 @@ use rayon::prelude::*;
 use super::pedersen;
 use crate::crh::{CRHScheme, TwoToOneCRHScheme};
 use ark_ec::{
-    twisted_edwards::Projective as TEProjective, twisted_edwards::TECurveConfig, AdditiveGroup,
+    twisted_edwards::Projective as TEProjective, twisted_edwards::TECurveConfig,
     CurveGroup,
 };
-use ark_ff::fields::PrimeField;
+use ark_ff::fields::{PrimeField, AdditiveGroup};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::borrow::Borrow;
 use ark_std::{cfg_chunks, end_timer, start_timer};
