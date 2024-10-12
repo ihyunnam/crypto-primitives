@@ -7,6 +7,7 @@ use ark_ff::{
     fields::{Field, PrimeField},
     Zero,
 };
+use ark_std::vec::Vec;
 use ark_relations::r1cs::{Namespace, SynthesisError};
 use ark_serialize::CanonicalSerialize;
 

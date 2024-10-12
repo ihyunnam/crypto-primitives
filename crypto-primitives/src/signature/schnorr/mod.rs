@@ -21,7 +21,7 @@ pub mod constraints;
 
 pub struct Schnorr<C: CurveGroup> {
     _group: PhantomData<C>,
-    _hash: PhantomData<D>,
+    // _hash: PhantomData<D>,
 }
 
 #[derive(Derivative)]

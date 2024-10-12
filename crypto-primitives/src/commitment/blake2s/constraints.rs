@@ -6,7 +6,7 @@ use crate::{
 };
 use ark_ff::{Field, PrimeField};
 use ark_r1cs_std::prelude::*;
-
+use ark_std::vec::Vec;
 use core::borrow::Borrow;
 
 #[derive(Clone)]
